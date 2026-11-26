@@ -58,11 +58,30 @@ Orden base (quita lo que no aporte, no rellenes):
 
 ## 3. Proyecto
 
-Si el directorio ya es un proyecto Next.js, trabaja dentro. Si no, crea uno en `landings/<slug-del-producto>/` (o donde pida el usuario):
+Decide dónde vive la app (salvo que el usuario indique otra ubicación):
+
+| Situación | Ubicación |
+|---|---|
+| El directorio ya es un proyecto Next.js | Trabaja dentro |
+| **Repo de una sola landing**: no hay `package.json` en la raíz ni otras apps/landings | **En la raíz del repo** |
+| El repo ya tiene otras apps o landings (o el usuario quiere varias) | `landings/<slug-del-producto>/` |
+
+La raíz es el default para una sola landing porque Vercel, Netlify y similares construyen desde la raíz: con la app en un subdirectorio el deploy falla (`NEXT_NO_VERSION`) hasta configurar *Root Directory*. Si usas `landings/<slug>/`, avísalo en el informe final.
+
+**En la raíz.** `create-next-app` se niega a escribir en un directorio con archivos (README, skills, docs…), así que genera el proyecto en una carpeta temporal fuera del repo y mueve su contenido a la raíz:
+
+```bash
+TMP="<scratchpad>/next-scaffold"
+npx create-next-app@latest "$TMP" --ts --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm --yes --disable-git
+```
+
+Mueve todo menos `.gitignore`, `README.md`, `node_modules` y `.next` sin pisar nada; combina `.gitignore` (une ambas listas y deja `.env*`) y conserva el `README.md` del repo agregándole cómo correr la landing. Luego, en la raíz: `npm install && npm i clsx tailwind-merge`. No crees carpetas intermedias.
+
+**En un subdirectorio:**
 
 ```bash
 mkdir -p landings   # create-next-app falla con "path is not writable" si la carpeta padre no existe
-npx create-next-app@latest landings/<slug> --ts --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm --yes
+npx create-next-app@latest landings/<slug> --ts --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm --yes --disable-git
 cd landings/<slug> && npm i clsx tailwind-merge
 ```
 
