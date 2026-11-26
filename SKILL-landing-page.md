@@ -61,11 +61,12 @@ Orden base (quita lo que no aporte, no rellenes):
 Si el directorio ya es un proyecto Next.js, trabaja dentro. Si no, crea uno en `landings/<slug-del-producto>/` (o donde pida el usuario):
 
 ```bash
+mkdir -p landings   # create-next-app falla con "path is not writable" si la carpeta padre no existe
 npx create-next-app@latest landings/<slug> --ts --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm --yes
 cd landings/<slug> && npm i clsx tailwind-merge
 ```
 
-Lee lo que generó (versión de Next en `package.json`, `globals.css`, `layout.tsx`) antes de escribir: adapta las APIs a esa versión en lugar de asumir.
+Lee lo que generó (versión de Next en `package.json`, `globals.css`, `layout.tsx`, y `AGENTS.md` si existe) antes de escribir: adapta las APIs a esa versión en lugar de asumir. Next 16+ trae su documentación en `node_modules/next/dist/docs/`: consúltala ante cualquier duda de API.
 
 ```
 src/
@@ -204,13 +205,13 @@ Cada sección: recibe sus datos tipados por props, usa `Section` + `Heading` + p
 
 ## 6. Responsive
 
-Mobile-first: diseña a 360 px y amplía con `sm` (640), `md` (768), `lg` (1024). Sin scroll horizontal a ningún ancho; texto de cuerpo ≥ 16 px; longitud de línea ≤ ~70 caracteres (`max-w-prose` / `max-w-2xl`); `text-balance` en titulares. Navegación colapsa a menú en `< md`. Pricing y grids pasan a una columna en móvil, con el plan destacado primero.
+Mobile-first: diseña a 360 px y amplía con `sm` (640), `md` (768), `lg` (1024). Sin scroll horizontal a ningún ancho; texto de cuerpo ≥ 16 px; longitud de línea ≤ ~70 caracteres (`max-w-prose` / `max-w-2xl`); `text-balance` en titulares. Navegación colapsa a menú en `< md`, o en `< lg` si tiene más de 3 enlaces (a 768 px cinco enlaces + CTA no entran en una línea). Pricing y grids pasan a una columna en móvil, con el plan destacado primero.
 
 ## 7. Performance (Core Web Vitals)
 
 Objetivos: **LCP < 2.5 s, INP < 200 ms, CLS < 0.1**, Lighthouse móvil ≥ 90 en Performance y 100 en Accessibility, Best Practices y SEO.
 
-- **Render estático**: la página no usa datos dinámicos, debe salir `○ (Static)` en `next build`. Nada de `cookies()`/`headers()` ni `fetch` sin caché en la página.
+- **Render estático**: la página no usa datos dinámicos, debe salir `○ (Static)` en `next build`. Nada de `cookies()`/`headers()` ni `fetch` sin caché en la página. En Next 16 tampoco `new Date()`/`Date.now()` en Server Components prerenderizados (rompe el build): el año del copyright va como constante en `content/landing.ts`.
 - **JS mínimo**: solo `MobileNav` (y un formulario, si hay) son Client Components, pequeños y en la hoja del árbol. Nunca `"use client"` en `page.tsx`, `layout.tsx` ni en secciones enteras.
 - **Fuentes** con `next/font` (self-hosted, `display: "swap"`, solo los pesos usados, `subsets` correctos), expuestas como variable CSS al `@theme`.
 - **Imágenes** con `next/image`: `width`/`height` o `fill` + contenedor con `aspect-ratio` (CLS 0), `sizes` real según el layout, formatos AVIF/WebP. La imagen del hero (candidata a LCP) se precarga (`preload` en Next 16+, `priority` en versiones anteriores) y nunca es lazy; el resto, lazy por defecto.
@@ -231,7 +232,7 @@ No declares terminado nada que no hayas comprobado:
 
 1. `npm run lint` y `npx tsc --noEmit` sin errores.
 2. `npm run build` sin errores ni warnings; confirma que `/` es estática y revisa el *First Load JS*.
-3. `npm start` y revisa en navegador (si hay una herramienta de navegador disponible) a 360, 768 y 1280 px: sin desbordes, menú móvil funcional, navegación completa solo con teclado, foco visible.
+3. `npm start` y revisa en navegador (si hay una herramienta de navegador disponible) a 360, 768 y 1280 px: sin desbordes, menú móvil funcional, navegación completa solo con teclado, foco visible. Sin herramienta de navegador, haz capturas con Chrome/Edge headless (`--headless=new --screenshot --window-size=W,H`); como en Windows la ventana headless no baja de ~500 px de ancho, para 360 px captura una página auxiliar que cargue la landing en un `<iframe style="width:360px">` (si no, la captura sale recortada y parece un desborde). Mira las capturas y corrige lo que se vea mal.
 4. Lighthouse sobre el build de producción, si hay Chrome disponible:
    ```bash
    npx lighthouse http://localhost:3000 --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=./.lighthouse/mobile.json --chrome-flags="--headless=new" --quiet
