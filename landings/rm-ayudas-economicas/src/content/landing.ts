@@ -194,5 +194,32 @@ export const footer = {
     { label: "Términos y condiciones", href: "/terminos" },
     { label: "Política de privacidad", href: "/privacidad" },
     { label: "Defensa del consumidor", href: "https://www.argentina.gob.ar/produccion/defensadelconsumidor" },
-  ], // PLACEHOLDER: páginas legales por crear
+  ],
+};
+
+export type LegalPageContent = {
+  title: string;
+  description: string;
+  updatedAt: string | null; // fecha de última actualización, p. ej. "1 de diciembre de 2026"
+  sections: { title: string; body: string[] }[]; // vacío = página pendiente de completar
+};
+
+/**
+ * PLACEHOLDER: páginas legales creadas sin contenido.
+ * Completar `sections` y `updatedAt` con el texto aprobado por el área legal.
+ * Mientras `sections` esté vacío, la página muestra un aviso y no se indexa.
+ */
+export const legalPages: Record<"terminos" | "privacidad", LegalPageContent> = {
+  terminos: {
+    title: "Términos y condiciones",
+    description: "Términos y condiciones de uso del sitio y de las ayudas económicas de RM.",
+    updatedAt: null,
+    sections: [],
+  },
+  privacidad: {
+    title: "Política de privacidad",
+    description: "Cómo RM recolecta, usa y protege tus datos personales.",
+    updatedAt: null,
+    sections: [],
+  },
 };
