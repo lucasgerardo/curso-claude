@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* Verde azulado: confianza y estabilidad. brand-600/700 cumplen ≥ 4.5:1 con blanco. */
+  --color-brand-50: oklch(97% 0.02 175);
+  --color-brand-100: oklch(93% 0.04 175);
+  --color-brand-500: oklch(56% 0.11 175);
+  --color-brand-600: oklch(47% 0.1 175);
+  --color-brand-700: oklch(40% 0.09 175);
+  --color-brand-900: oklch(27% 0.05 175);
+
+  --radius-card: 1rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-white font-sans text-zinc-900 antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+
+  [id] {
+    scroll-margin-top: 5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
